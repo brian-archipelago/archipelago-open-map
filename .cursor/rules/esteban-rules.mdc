@@ -1,0 +1,15 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Frontend Rules
+
+This repo is a Vite + React 18 + TypeScript project that uses Tailwind CSS, Shadcn UI, Mapbox GL JS, and Supabase. Use the @/ alias for imports.
+
+## Path Restrictions
+
+
+
+
+These rules apply only to files in the `frontend/` directory.

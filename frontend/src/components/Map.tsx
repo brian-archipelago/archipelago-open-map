@@ -37,7 +37,14 @@ const Map: React.FC<MapProps> = ({ features, onMapClick }) => {
 
   useEffect(() => {
     if (mapRef.current) return;
-    mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN as string;
+    
+    const mapboxToken = import.meta.env.VITE_MAPBOX_TOKEN as string;
+    if (!mapboxToken) {
+      console.error('Missing VITE_MAPBOX_TOKEN environment variable');
+      return;
+    }
+    
+    mapboxgl.accessToken = mapboxToken;
     const map = new mapboxgl.Map({
       container: mapContainer.current!, // <-- non-null assertion
       style: 'mapbox://styles/mapbox/light-v11',
@@ -48,6 +55,11 @@ const Map: React.FC<MapProps> = ({ features, onMapClick }) => {
 
     map.on('load', () => {
       map.addControl(new NavigationControl(), 'top-right');
+    });
+
+    // Add error handling as recommended by Mapbox documentation
+    map.on('error', (e) => {
+      console.error('Mapbox error:', e);
     });
 
     map.on('click', (e) => {

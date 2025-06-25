@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/select";
 import React, { useState, useEffect, FormEvent } from 'react';
 import { supabase } from './supabaseClient';
+import { Tables } from './types/database.types';
 import Map from './components/Map';
 
 interface FeatureProperties {
@@ -47,6 +48,9 @@ interface MapClickCoords {
   lat: number;
 }
 
+// Use the generated database types instead of manual interface
+type ProjectRow = Tables<'projects'>;
+
 export default function App() {
   const [features, setFeatures] = useState<FeatureCollection | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -71,7 +75,7 @@ export default function App() {
 
       const geojson: FeatureCollection = {
         type: 'FeatureCollection',
-        features: (data || []).map((item: any) => ({
+        features: (data || []).map((item) => ({
           type: 'Feature',
           geometry: {
             type: item.geom.type,
