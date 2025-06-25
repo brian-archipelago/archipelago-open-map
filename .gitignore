@@ -1,0 +1,36 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Dependencies / builds
+node_modules/
+dist/
+dist-ssr/
+build/
+coverage/
+.vite/
+.tailwind/
+.postcss-cache/
+.cache/
+
+# Supabase local artifacts
+.supabase/
+
+# Environment
+.env
+.env.*
+
+# Editor / OS cruft
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+*.suo
+*.njsproj
+*.sln
+*.sw?
