@@ -1,0 +1,89 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+Update this rule if user requested changes to backend architecture, database schema, or Supabase configuration.
+
+# Backend Structure & Conventions Document
+
+## 1 Overview
+
+Archipelago Map's backend is built entirely on **Supabase**, leveraging Postgres, Row-Level Security (RLS), Storage, Auth, and optional Realtime. This document defines the folder layout, naming conventions, and best practices for schema evolution and server-side logic.
+
+## 2 Repository Layout
+
+```
+supabase/
+  config.toml           # Supabase CLI project config
+  migrations/
+    001_init.sql        # Timestamped/numbered SQL migrations
+    002_add_votes.sql   # …
+  seed/
+    seed.sql            # Non-prod seed data (optional)
+```
+
+* Keep all database changes in `supabase/migrations/` as ordered SQL files prefixed with an incremental three-digit index (e.g., `003_...sql`).
+* Never edit a past migration; create a new one to modify schema.
+
+## 3 Database Schema
+
+| Table | Purpose | Key Columns |
+|-------|---------|------------|
+| `users` | Auth users mirror | `id` (UUID), `email`, `full_name`, `firm` |
+| `projects` | Map pins / portfolio entries | `id`, `title`, `description`, `geom` (POINT), `cover_image_url`, `is_public`, `owner_id`, `created_at` |
+| `project_votes` | Up-votes per project | `user_id`, `project_id`, `created_at` |
+
+* Geospatial data uses PostGIS `POINT` type (SRID 4326).
+* GIS bounding-box queries handled via an RPC (see §4).
+
+## 4 RPC & Stored Procedures
+
+| Name | Purpose | Notes |
+|------|---------|-------|
+| `get_projects_in_bbox` | Returns projects within `west, south, east, north` bounds | Handles `is_public` filter; paginated |
+| `upsert_vote` | Insert or remove user vote | Uses `ON CONFLICT` |
+
+* Store functions in dedicated migration files (e.g., `005_rpc_get_projects_in_bbox.sql`).
+* Functions should be **STABLE** where possible; mark `SECURITY DEFINER` only when necessary.
+
+## 5 Row-Level Security (RLS)
+
+* All tables have `ALTER TABLE … ENABLE ROW LEVEL SECURITY`.
+* Policies:
+  * `projects_select_public` – any user can `SELECT` rows where `is_public = true`.
+  * `projects_select_owner` – owner can `SELECT` private rows (`owner_id = auth.uid()`).
+  * `projects_insert_owner` – authenticated users can `INSERT` (`owner_id = auth.uid()`).
+  * `projects_update_owner` – only owner can `UPDATE`.
+  * Similar patterns for `project_votes`.
+
+## 6 Storage Buckets
+
+| Bucket | Purpose | Public? |
+|--------|---------|---------|
+| `project-covers` | Project cover images (JPG/PNG) | Yes (signed URLs) |
+| `project-attachments` | PDFs, DWGs, etc. | No |
+
+* File paths follow `{project_id}/{filename}` convention.
+
+## 7 Environment Variables
+
+| Variable | Description |
+|----------|-------------|
+| `VITE_SUPABASE_URL` | Supabase project URL (frontend) |
+| `VITE_SUPABASE_ANON_KEY` | Public anon key (frontend) |
+| `SUPABASE_SERVICE_ROLE_KEY` | Service key for admin scripts/tests |
+| `MAPBOX_TOKEN` | Mapbox GL access token |
+
+## 8 Local Development
+
+* Use **Supabase CLI** (`supabase start`) to spin up Postgres + Studio locally.
+* Apply migrations via `supabase db push`.
+* Connect to local Postgres on `localhost:54322` for debugging.
+
+## 9 Deployment & Promotion
+
+* Preview environments: Supabase branch deployments via GitHub Actions (future).
+* Production DB: manual migration promotion after successful preview run.
+* Backup strategy: daily Postgres dumps via Supabase scheduled backups.
+

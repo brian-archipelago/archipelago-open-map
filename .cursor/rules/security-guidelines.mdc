@@ -1,0 +1,71 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+Update this rule if user requested changes to security posture, policies, or controls.
+
+# Security Guidelines Document
+
+These guidelines outline best practices and mandatory controls to keep Archipelago Map secure throughout development, deployment, and operations.
+
+## 1 Authentication & Authorization
+
+* Use **Supabase Auth** for all user sign-in flows (email magic-link, LinkedIn SSO).
+* Enforce session validation on every API call using Supabase's built-in JWT verification.
+* Role-based access is enforced via **Row-Level Security (RLS)** policies in Postgres—not in the client.
+* Never expose `service_role` key to the frontend—server-side use only (scripts/tests).
+
+## 2 Data Protection
+
+* **Encryption in Transit:** All environments must be served over HTTPS (Vercel provides TLS by default).
+* **Encryption at Rest:** Supabase Storage & Postgres are encrypted by the provider; no plaintext backups outside managed infrastructure.
+* Sensitive environment variables (Supabase keys, Mapbox token) stored in Vercel/CI secrets—never committed.
+
+## 3 Row-Level Security (RLS)
+
+* Enable `ALTER TABLE … ENABLE ROW LEVEL SECURITY` on every table.
+* Define separate policies for `SELECT`, `INSERT`, `UPDATE`, `DELETE` aligning with user ownership and public/private flags.
+* Test RLS with the Supabase dashboard or `supabase functions test` before migration promotion.
+
+## 4 Storage Bucket Permissions
+
+| Bucket | Visibility | Access Notes |
+|--------|------------|--------------|
+| `project-covers` | Public (signed URL) | Readable via time-limited URL; write restricted to owner |
+| `project-attachments` | Private | Access only via Supabase signed URL API |
+
+## 5 Dependency & Supply-Chain Security
+
+* Enable **Dependabot** for npm & GitHub Actions updates.
+* Use `npm audit` (CI) to fail builds on high-severity vulnerabilities.
+* Pin critical packages to major versions (SemVer) to avoid accidental breaking upgrades.
+
+## 6 Secrets Management
+
+* Store secrets in **Vercel Environment Variables** (prod) and **GitHub Actions secrets** (CI).
+* Use prefixed naming (`SUPABASE_*`, `MAPBOX_TOKEN`) for clarity.
+* Never log or echo secrets in build scripts; use masked env ^ variables.
+
+## 7 Secure Coding Practices
+
+* Avoid string concatenation for SQL—use Supabase client parameterisation.
+* Sanitize all user-provided content displayed in the UI; prefer React's escaping over `dangerouslySetInnerHTML`.
+* Validate file uploads (type & size) client-side before sending to Storage.
+* Always check `error` objects returned by Supabase queries.
+
+## 8 Logging & Monitoring
+
+* Frontend: instrument global error boundary to capture exceptions (Sentry post-MVP).
+* Backend: rely on Supabase logs for query, auth, and function invocations.
+* Retain logs for minimum 30 days for audit purposes.
+
+## 9 Incident Response
+
+* In case of suspected breach, revoke compromised keys, rotate Supabase credentials, and invalidate user sessions.
+* Document incident in internal repo wiki with timeline and remediation steps.
+
+---
+
+Adhering to these security guidelines helps ensure user data is protected and the platform remains trustworthy.
+

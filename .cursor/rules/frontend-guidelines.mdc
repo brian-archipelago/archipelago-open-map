@@ -1,0 +1,85 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+Update this rule if user requested changes to frontend coding conventions or UI guidelines.
+
+# Frontend Guidelines Document
+
+These guidelines align the team on code quality, consistency, and UX excellence for the Archipelago Map frontend.
+
+## 1 Folder & Module Structure
+
+```
+src/
+  components/       # Re-usable UI building blocks (stateless when possible)
+  pages/            # Route-level containers (fetching + composition)
+  lib/              # Pure helpers / utils (no React imports)
+  hooks/            # Custom hooks (prefixed with use*)
+  types/            # Shared TypeScript declarations
+```
+
+* Keep files < 300 lines; split when complexity grows.
+* Co-locate CSS (Tailwind classes or minimal module) next to component when not using utility classes.
+
+## 2 Coding Conventions
+
+* **TypeScript strict**: no `any`; leverage generics & union types.
+* **Functional Components** only. No class components.
+* Destructure props at the top of the component.
+* Name files in **PascalCase** for components (`Map.tsx`) and **camelCase** for hooks (`useViewport.ts`).
+* Use absolute imports via `@/` alias; avoid deep relative paths.
+
+## 3 Styling & UI
+
+* Prefer **Tailwind CSS** utility classes; avoid custom CSS unless necessary.
+* Follow shadcn/ui patterns for composable, accessible components. Extend rather than fork.
+* Ensure WCAG 2.1 AA contrast ratios; test with keyboard navigation.
+* Keep responsive breakpoints to `sm`, `md`, `lg`, `xl` unless edge-case.
+
+## 4 State & Data Fetching
+
+* Co-locate React Query (future) hooks with pages that own the query.
+* Normalise Supabase rows into typed models in `lib/` when transforming data.
+* Cache invalidation: after create/update/delete, refetch queries or use optimistic updates.
+
+## 5 React Hooks Best Practices
+
+* Prefix all custom hooks with `use` and document return shape via TS interface.
+* Avoid side-effects in render body; use `useEffect`/`useLayoutEffect` explicitly.
+* Memoise expensive computations with `useMemo` and functions with `useCallback` when prop-drilling.
+
+## 6 Accessibility (a11y)
+
+* All interactive elements need `aria-label` or visible text.
+* Use semantic HTML elements (`<button>`, `<nav>`, `<main>`) — avoid `div` soup.
+* Provide keyboard focus ring via Tailwind `focus:outline` utilities.
+
+## 7 Performance
+
+* Lazy-load heavy routes via React lazy/Suspense (e.g., `/project/:id`).
+* Debounce expensive callbacks (e.g., viewport search) with 300 ms default.
+* Avoid prop drilling >3 levels; lift state or use context.
+
+## 8 Testing Strategy
+
+* Write **Vitest + React Testing Library** tests for critical hooks & components.
+* Test user interactions, not implementation details.
+* Ensure coverage for edge cases (empty states, error boundaries).
+
+## 9 Git & PR Process
+
+* Branch naming: `feat/description`, `fix/bug-name`, `chore/task`.
+* PR description must include **What / Why / How Tested**.
+* Green CI (lint, type-check, tests) required before merge.
+
+## 10 Linting & Formatting
+
+* ESLint rules enforced on commit via `lint-staged` (future).
+* Prettier handles formatting; do not commit style fixes manually.
+
+---
+
+Adhering to these guidelines ensures a maintainable, high-quality frontend codebase that scales with the team.
+

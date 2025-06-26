@@ -1,0 +1,70 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+Update this rule if user requested changes to project timeline, milestones, or delivery approach.
+
+# Implementation Plan Document
+
+## 1 Overview
+
+This plan breaks down how the Archipelago Map MVP will be delivered—from environment setup to public launch—using small, incremental milestones. It helps the team align on scope, sequencing, and "Definition of Done" for each phase.
+
+## 2 Phases & Milestones
+
+| Phase | Goal | Key Deliverables | Target Duration |
+|-------|------|------------------|-----------------|
+| 0. Project Setup | Baseline repo & infra | Codebase skeleton, CI pipeline, Supabase project, Vercel envs | 1 week |
+| 1. Map Canvas | Read-only exploration | Mapbox GL view, clustering, RPC for bbox query, landing page | 2 weeks |
+| 2. Auth & Session | Secure access | Email+LinkedIn SSO, protected routes, session persistence | 1 week |
+| 3. Project CRUD | Content creation | New/Edit project form, Supabase Storage uploads, RLS policies | 3 weeks |
+| 4. Engagement Loop | Community features | Up-vote, seen/unseen pins, score badge, profile page | 2 weeks |
+| 5. Polish & QA | Stability & UX | a11y fixes, error states, testing coverage ≥ 80 %, perf budget | 2 weeks |
+| 6. Launch | Public alpha | Production env promotion, backup plan, launch checklist | 1 week |
+
+*Timeline is aspirational; adjust based on feedback & resourcing.*
+
+## 3 Workstream Breakdown
+
+1. **Frontend** – Vite/React UI, Tailwind styling, hooks, and routing.
+2. **Backend** – Supabase migrations, RLS, RPC functions, Storage config.
+3. **DevOps** – GitHub Actions CI, Vercel deploy previews, Supabase branch db.
+4. **Testing & QA** – Vitest unit tests, manual smoke tests, a11y audits.
+5. **Docs & Rules** – Keep rule documents updated alongside code changes.
+
+## 4 Definition of Done (DoD)
+
+* All acceptance criteria met.
+* Lint, type-check, and tests pass in CI.
+* Relevant rule documents updated.
+* Feature behind flag (if risky) or fully integrated.
+* No major a11y or performance regressions (>10 % baseline).
+
+## 5 Release Process
+
+1. Feature branch → PR with description (What / Why / How Tested).
+2. Automatic preview deploy & Supabase branch via GitHub Actions.
+3. Review & QA sign-off.
+4. Merge to `main` → Vercel production build.
+5. Manual Supabase migration promotion.
+
+## 6 Risk & Mitigation
+
+| Risk | Impact | Mitigation |
+|------|--------|-----------|
+| Feature creep | Delay & scope bloat | Rule documents gate changes; weekly triage |
+| Mapbox cost spike | Budget overrun | Monitor tile usage; optimise clustering |
+| Data breach | Reputational damage | Follow Security Guidelines; periodic audits |
+
+## 7 Post-MVP Roadmap (Tentative)
+
+* Direct messaging & collab contracts
+* Analytics dashboards
+* 3-D terrain & BIM viewer
+* Native mobile apps
+
+---
+
+Stick to this plan but revisit after each phase retrospective.
+

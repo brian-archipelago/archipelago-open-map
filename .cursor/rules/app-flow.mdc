@@ -1,0 +1,63 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+Update this rule if user requested changes to the app flow or navigation.
+
+# App Flow Document
+
+## 1 Overview
+
+Archipelago Map guides users through a streamlined sequence from landing on the marketing page to exploring the collaborative map, creating project pins, and engaging with the community. The flow prioritises quick access to core value (map exploration) while progressively introducing creation and engagement features.
+
+## 2 Step-by-Step Flow
+
+1. **Landing (`/`)** – Marketing splash with "Explore Map" & "Sign Up" CTA.
+2. **Auth (`/login` or `/signup`)** – Email or LinkedIn SSO. Redirect to last intended route on success.
+3. **Map Canvas (`/map`)**
+   1. Initialise Mapbox GL, fetch visible public pins via Supabase RPC.
+   2. Cluster & render pins; unseen pins in red until clicked.
+4. **Project Detail (`/project/:id`)**
+   1. Fetch project row + storage assets.
+   2. Show cover image, metadata, attachments, up-vote button.
+5. **Create / Edit Project (`/project/new` or `/project/:id/edit`)**
+   1. Multi-step form: location → metadata → uploads → permission.
+   2. On save, insert/update row, upload files, invalidate map query.
+6. **Firm Profile (`/profile/:firm`)** – Auto-generated list of user's public pins.
+7. **Logout** – Clear session, redirect to landing.
+
+## 3 Route & Screen Reference
+
+| Route | Screen Name | Purpose |
+|-------|-------------|---------|
+| `/` | Landing | Marketing, conversion |
+| `/login`, `/signup` | Auth | SSO & email auth |
+| `/map` | Map Canvas | Primary exploration UI |
+| `/project/:id` | Project Detail | Deep dive & engagement |
+| `/project/new` | New Project | Create pin |
+| `/project/:id/edit` | Edit Project | Modify pin |
+| `/profile/:firm` | Firm Profile | Showcase portfolio |
+
+## 4 State & Data Touchpoints
+
+* **Auth** – Supabase Auth session persisted in localStorage.
+* **Pins** – `projects` table queried via RPC (`get_projects_in_bbox`) whenever map viewport changes.
+* **Uploads** – Supabase Storage buckets `project-covers` & `project-attachments`.
+* **Votes** – `project_votes` table upsert on click; optimistic UI updates score.
+* **Realtime** – Subscriptions on `projects` for live updates (optional post-MVP).
+
+## 5 Error & Empty States
+
+* **No Pins in Viewport** – Show "No projects found here yet" placeholder.
+* **Network Failure** – Toast notification + retry CTA.
+* **Auth Error** – Inline form errors; fallback to email sign-in.
+
+## 6 Non-Functional Flow Notes
+
+* **Performance** – Debounce viewport queries (300 ms) to stay under 500 ms tile load target.
+* **Security** – RLS ensures users only modify their own projects; Storage upload signed URLs.
+* **Accessibility** – Keyboard navigation for map controls & form fields; alt text for images.
+* **Analytics** – Track route changes & key actions (pin create, vote) via lightweight client analytics.
+
+

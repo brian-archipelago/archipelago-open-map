@@ -1,0 +1,87 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+Update this rule if user requested changes to the project requirement, etc.
+
+# Project Requirements Document
+
+## 1 Project Overview
+
+Archipelago Map is a geospatial portfolio and collaboration platform for AEC professionals. It combines the familiar map interface of Google Maps with the open‑source ethos of GitHub to lower the barrier to sharing project knowledge, accelerate design innovation, and catalyze a community of practice. The MVP focuses on allowing practitioners to publish project pins, explore others' work, and earn recognition for open‑sourcing high‑quality projects, while the public can browse and up‑vote exemplary designs.
+
+## 2 In‑Scope vs. Out‑of‑Scope (MVP)
+
+### In‑Scope
+
+* Email/LinkedIn SSO authentication
+* Map canvas with pan/zoom, clustering, and viewport search
+* Add / edit project pin with title, description, location, cover image, and file attachments (PDF, JPG, DWG/BIM)
+* Public ↔ Private permission toggle per project
+* Seen vs. Unseen pin colouring
+* Basic search & filters (discipline, status, location radius)
+* Auto‑generated firm profile page populated from public pins
+* Community up‑vote button, visible score, and "Community Pick" badge that boosts search ranking
+* Supabase database, RLS for private/public data, and REST/Realtime API
+
+### Out‑of‑Scope (deferred post‑MVP)
+
+* Direct messaging & collaboration contracts
+* 3‑D terrain or BIM viewer
+* AI‑generated tags or summaries
+* Analytics dashboards and activity notifications
+* Payments, billing, or marketplace transactions
+* Mobile native apps
+
+## 3 High‑Level User Flow
+
+1. **Sign Up / Log In** via email or LinkedIn SSO.
+2. **Create Project Pin**: user selects a map location, uploads cover image + files, adds metadata, chooses Public or Private.
+3. **Explore Map**: user browses; unseen pins are red, seen pins turn grey. Search/filter narrows results.
+4. **Interact**: user up‑votes inspiring public projects; top‑rated pins receive "Community Pick" badge.
+5. **Showcase**: user's firm profile auto‑updates with their public pins; shareable link replaces traditional portfolio site.
+
+## 4 Core Features
+
+* **F1: Map Canvas** - Primary navigation surface
+  * Mapbox GL map with clustering and custom pin styles
+* **F2: Project CRUD** - Enables content creation
+  * Form to add, edit, or delete project pins with attachments
+* **F3: Permissions** - Supports private scratch‑pad use case
+  * Public/Private toggle enforced by Supabase RLS
+* **F4: Search & Filter** - Improves discoverability
+  * Text search + basic filters; ranks Community Pick higher
+* **F5: Engagement Loop** - Incentivises openness & repeat visits
+  * Up‑vote, score, badge, and seen/unseen colouring
+* **F6: Auto Firm Page** - Immediate value; reduces website burden
+  * Auto‑generated page listing user's public projects
+
+## 5 Tech Stack & Tools
+
+* **Frontend**: Vite + React 18 + TypeScript, Tailwind CSS, shadcn/ui
+* **Mapping**: Mapbox GL JS
+* **Backend**: Supabase (Postgres, Auth, Storage, Realtime)
+* **Hosting/CI**: Vercel (preview deploys), GitHub Actions (lint, test)
+* **Path Alias**: `@/` mapped to `/src`
+* **Testing**: Vitest + React Testing Library
+
+## 6 Non‑Functional Requirements
+
+* **Performance**: First map paint < 2 seconds on 4G; subsequent tile loads < 500 ms.
+* **Scalability**: Support 10k public pins with sub‑second search via Supabase full‑text index.
+* **Security & Privacy**: Row‑Level Security (RLS) enforced in Supabase; OWASP Top 10 mitigations.
+* **Accessibility**: WCAG 2.1 AA compliance for key flows.
+* **Reliability**: ≥ 99.5 % uptime for API and tiles.
+
+## 7 Constraints & Assumptions
+
+* MVP targets desktop web (Chrome / Edge / Firefox); mobile responsive but no native app.
+* Small, invite‑only alpha cohort (< 50 users) provides feedback; public launch later.
+* Mapbox free tier assumed sufficient for alpha usage; revisit licensing before scale.
+* Supabase Storage holds up to 5 GB of project files during MVP; large BIM models excluded.
+* Development team: 1 lead dev (user), senior engineer (Cursor).
+
+
+
+

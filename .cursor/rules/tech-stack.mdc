@@ -1,0 +1,66 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+Update this rule if user requested changes to the tech stack or supporting tooling.
+
+# Tech Stack & Tooling Document
+
+## 1 Overview
+
+This document captures all core technologies, libraries, and services powering the Archipelago Map project. Treat it as the single source of truth when selecting or upgrading dependencies.
+
+## 2 Frontend
+
+| Layer | Technology | Notes |
+|-------|------------|-------|
+| Build Tool | **Vite** | Lightning-fast dev server & HMR |
+| Framework | **React 18** + **TypeScript** | Functional components & hooks |
+| Styling | **Tailwind CSS** | Utility-first; configured via `tailwind.config.js` |
+| UI Library | **shadcn/ui** | Re-usable headless components |
+| Mapping | **Mapbox GL JS** | Vector tiles, clustering, custom layers |
+| State / Data | **React Query** *(future)* | Not yet added; consider for RPC caching |
+| Icons | **Lucide** *(implicit via shadcn/ui)* | Consistent iconography |
+
+## 3 Backend / Platform
+
+| Concern | Service / Library | Notes |
+|---------|------------------|-------|
+| Database | **Supabase Postgres** | Managed Postgres with RLS |
+| Auth | **Supabase Auth** | Email magic-link + LinkedIn SSO |
+| Storage | **Supabase Storage** | Buckets: `project-covers`, `project-attachments` |
+| Realtime | **Supabase Realtime** | Optional post-MVP live updates |
+
+## 4 DevOps / CI & CD
+
+| Area | Tool | Notes |
+|------|------|-------|
+| Hosting | **Vercel** | Preview deploys per PR; prod on `main` |
+| Continuous Integration | **GitHub Actions** | Lint, type-check, test on push/PR |
+| Linting | **ESLint** + **Prettier** | Configured via `eslint.config.js`; Prettier piggy-backs |
+| Path Alias | `@/` → `/src` | Set in `tsconfig.json` & Vite |
+
+## 5 Testing & Quality
+
+| Type | Library | Notes |
+|------|---------|-------|
+| Unit / Component | **Vitest** | Jest-compatible testing |
+| DOM Testing | **React Testing Library** | Accessible queries |
+| End-to-End *(future)* | **Playwright** | Not yet integrated |
+
+## 6 Local Development Requirements
+
+* **Node.js ≥ 18** recommended (ESM-friendly).
+* `pnpm` or `npm` supported; `npm install` lockfile in repo.
+* Environment variables via `.env.local` for Supabase keys & Mapbox token.
+
+## 7 Monitoring & Analytics (Planned)
+
+* Lightweight client-side analytics (Splitbee or PostHog) to track route changes and key actions.
+* Error monitoring via Sentry (post-MVP).
+
+## 8 Upgrade Strategy
+
+* Dependabot enabled (GitHub) for weekly version bumps.
+* SemVer pinned where breaking changes can impact prod (e.g., Supabase JS, Mapbox GL).
